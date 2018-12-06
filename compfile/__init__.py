@@ -204,10 +204,11 @@ class CompFile:
       rather than "rb".
 
     """
-    def __new__(cls, path, mode='r', *args, engine=None, **kwargs):
+    def __new__(cls, path, mode='r', *args, **kwargs):
         if cls is not CompFile:
             return object.__new__(cls)
 
+        engine = kwargs.pop('engine', None)
         if engine is None:
             engine = auto_engine(path)
             if engine is None:
