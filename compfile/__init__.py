@@ -308,6 +308,6 @@ class GzipFile(CompFile):
         self._file = gzip.open(path, mode, *args, **kwargs)
 
 def open(*args, **kwargs):
-    """Shortcut to :code:`compfile.CompFile()`
+    """Shortcut to "compfile.CompFile()"
     """
     return CompFile(*args, **kwargs)
