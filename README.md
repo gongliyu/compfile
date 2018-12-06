@@ -1,5 +1,9 @@
 *compfile* Common interfaces for manipulating compressed files (lzma, gzip etc)
 
+[![Build Status](https://travis-ci.com/gongliyu/compfile.svg?branch=master)](https://travis-ci.com/gongliyu/compfile)
+[![Documentation Status](https://readthedocs.org/projects/compfile/badge/?version=latest)](https://compfile.readthedocs.io/en/latest/?badge=latest)
+[![Coverage Status](https://coveralls.io/repos/github/gongliyu/compfile/badge.svg?branch=master)](https://coveralls.io/github/gongliyu/compfile?branch=master)
+
 ## Rationale
 Sometimes, we need to deal with different compressed files. There are
 several packages/modules for compressed file manipulation, e.g.,
