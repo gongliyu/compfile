@@ -14,7 +14,6 @@ def test_compfile_open(fname):
         return
         
     fname = os.path.join(_data_path, fname)
-    f = compfile.open(fname, 'rt')
-    assert f.readline() == 'abc\n'
-    f.close()
+    with compfile.open(fname, 'rt') as f:
+        assert f.readline() == 'abc\n'
 
