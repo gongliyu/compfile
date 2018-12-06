@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import bz2, gzip, lzma, io, os, collections, bisect, abc, fnmatch, sys
+import bz2, gzip, io, os, collections, bisect, abc, fnmatch, sys
+
+if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
+    import lzma
+    _has_lzma = True
+else:
+    try:
+        import backports.lzma as lzma
+        _has_lzma = True
+    except:
+        _has_lzma = False
 
 __version__ = '0.0.1'
 
@@ -132,11 +142,12 @@ def auto_engine_bz2(path):
         return BZ2File
     return None
 
-@register_auto_engine(50, False)
-def auto_engine_lzma(path):
-    if fnmatch.fnmatch(path, '*.lzma') or fnmatch.fnmatch(path, '*.xz'):
-        return LZMAFile
-    return None
+if _has_lzma:
+    @register_auto_engine(50, False)
+    def auto_engine_lzma(path):
+        if fnmatch.fnmatch(path, '*.lzma') or fnmatch.fnmatch(path, '*.xz'):
+            return LZMAFile
+        return None
 
 @register_auto_engine(50, False)
 def auto_engine_gzip(path):
@@ -280,12 +291,13 @@ class BZ2File(CompFile):
 
         self._file = bz2.open(path, mode, *args, **kwargs)
 
-class LZMAFile(CompFile):
-    def __init__(self, path, mode='r', *args, **kwargs):
-        mode = mode.lower()
-        if 't' not in mode:
-            mode += 't'
-        self._file = lzma.open(path, mode, *args, **kwargs)
+if _has_lzma:
+    class LZMAFile(CompFile):
+        def __init__(self, path, mode='r', *args, **kwargs):
+            mode = mode.lower()
+            if 't' not in mode:
+                mode += 't'
+            self._file = lzma.open(path, mode, *args, **kwargs)
 
 
 class GzipFile(CompFile):
