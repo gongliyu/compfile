@@ -9,8 +9,8 @@ _data_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
     'abc.txt.lzma'
 ])
 def test_compfile_open(fname):
-    if not compfile._has_lzma and (fnmatch(fname, '*.lzma') or
-                                   fnmatch(fname, '*.xz')):
+    if not compfile._has_lzma and (fnmatch.fnmatch(fname, '*.lzma') or
+                                   fnmatch.fnmatch(fname, '*.xz')):
         return
         
     fname = os.path.join(_data_path, fname)
