@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import bz2, gzip, io, os, collections, bisect, abc, fnmatch, sys
+import bz2, gzip, io, os, bisect, fnmatch, sys
 
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
     import lzma
@@ -108,6 +108,7 @@ def _register_auto_engine1(func, priority=50, prepend=False):
     _auto_engine.insert(i, (priority, func))
     return func
 
+
 def _register_auto_engine2(priority=50, prepend=False):
     """Decorator with arguments for registering auto engine functions
 
@@ -161,8 +162,7 @@ def auto_engine(path):
 
     Args:
 
-      path (file-like, path-like): Opened file object or path to the
-        archive file
+      path (path-like): Path to the compressed file
 
 
     Return:
@@ -176,6 +176,29 @@ def auto_engine(path):
         if engine is not None:
             break
     return engine
+
+def is_compressed_file(path):
+    """Infer if the file is a compressed file from file name (path-like)
+    
+    Args:
+
+      path (path-like): Path to the file.
+
+    Return:
+
+      bool: Whether the file is a compressed file.
+
+    Example:
+
+      >>> is_compressed_file('a.txt.bz2')
+      True
+      >>> is_compressed_file('a.txt.gz')
+      True
+      >>> is_compressed_file('a.txt')
+      False
+    """
+    return auto_engine(path) is not None
+
 
 
 class CompFile:
