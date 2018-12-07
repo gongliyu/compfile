@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import bz2, gzip, io, os, collections, bisect, abc, fnmatch, sys
+import bz2, gzip, io, os, bisect, fnmatch, sys
 
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
     import lzma
@@ -107,6 +107,7 @@ def _register_auto_engine1(func, priority=50, prepend=False):
         i = bisect.bisect_right(p, priority)
     _auto_engine.insert(i, (priority, func))
     return func
+
 
 def _register_auto_engine2(priority=50, prepend=False):
     """Decorator with arguments for registering auto engine functions
