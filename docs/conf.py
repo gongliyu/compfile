@@ -67,6 +67,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
+    'sphinx.ext.extlinks',
     'm2r'
 ]
 
@@ -214,3 +215,9 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# external links
+extlinks = {
+    'issue': ('https://github.com/gongliyu/compfile/issues/%s', 'Issue #'),
+    'pr': ('https://github.com/gongliyu/compfile/pull/%s', 'PR #')
+}

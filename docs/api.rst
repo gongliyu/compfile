@@ -4,6 +4,6 @@ API Reference
 .. toctree::
    :maxdepth: 2
 
-.. currentmodule:: arlib
-.. automodule:: arlib
+.. currentmodule:: compfile
+.. automodule:: compfile
    :members:

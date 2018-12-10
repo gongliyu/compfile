@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to compfile's documentation!
-=================================
+====================================
 
 .. toctree::
    :maxdepth: 2
@@ -13,6 +13,7 @@ Welcome to compfile's documentation!
    intro
    guide
    api
+   changelog
 
 
 Indices and tables
