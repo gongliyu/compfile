@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import bz2, gzip, io, os, bisect, fnmatch, sys
+__version__ = '0.0.2'
+
+import bz2
+import gzip
+import io
+import os
+import bisect
+import fnmatch
+import sys
 
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
     import lzma
@@ -12,7 +20,6 @@ else:
     except:
         _has_lzma = False
 
-__version__ = '0.0.2'
 
 _auto_engine = []
 
@@ -140,20 +147,20 @@ def _register_auto_engine2(priority=50, prepend=False):
 @register_auto_engine(50, True)
 def auto_engine_bz2(path):
     if fnmatch.fnmatch(path, '*.bz2'):
-        return BZ2File
+        return bz2.open
     return None
 
 if _has_lzma:
     @register_auto_engine(50, False)
     def auto_engine_lzma(path):
         if fnmatch.fnmatch(path, '*.lzma') or fnmatch.fnmatch(path, '*.xz'):
-            return LZMAFile
+            return lzma.open
         return None
 
 @register_auto_engine(50, False)
 def auto_engine_gzip(path):
     if fnmatch.fnmatch(path, '*.gz'):
-        return GzipFile
+        return gzip.open
     return None
 
 def auto_engine(path):
@@ -200,35 +207,18 @@ def is_compressed_file(path):
     return auto_engine(path) is not None
 
 
-
-class CompFile:
-    """Common-interface to different type of compressed files manipulation
+def open(fpath, mode, *args, **kwargs):
+    """Open a compressed file as an uncompressed file stream
 
     Args:
-
-      path (path-like, file-like): Path of the archive to read or write
-
-      mode (str): The mode to open the member, same as in
-        :func:`open`. Default to 'r'.
-
-      \*args: Additional positional arguments passed to the underlying
-        engine constructor
-
-      engine (type): Class object of a specific subclass Archive which
-        implements the logic of processing a specific type of
-        Archive. Provided implements:
-
-        * BZ2File: bz2 file
     
-        * LZMAFile: lzma file
+      fpath (str): Path to the compressed file.
 
-        * GzipFile: gzip file
+      mode (str): Mode arguments used to open the file. Same as :func:`open`.
 
-        * None: Automatically determine engines by file properties and
-          mode
+    Return:
 
-      \**kwargs : Additional keyword arguments passed to the underlying
-        engine constructor
+      file-object: An uncompressed file stream
 
     Note:
 
@@ -236,101 +226,10 @@ class CompFile:
       the argument *mode* rather than the conventions of underlying
       module such as :mod:`bz2`. That's to say, we treat "r" as "rt"
       rather than "rb".
-
     """
-    def __new__(cls, path, mode='r', *args, **kwargs):
-        if cls is not CompFile:
-            return object.__new__(cls)
-
-        engine = kwargs.pop('engine', None)
-        if engine is None:
-            engine = auto_engine(path)
-            if engine is None:
-                raise RuntimeError('Cannot automatically infer engine.')
-
-        return engine.__new__(engine, path, mode, *args, **kwargs)
-
-    def close(self):
-        self._file.close()
-
-    @property
-    def closed(self):
-        return self._file.closed()
-
-    def fileno(self):
-        return self._file.fileno()
-
-    def seekable(self):
-        return self._file.seekable()
-
-    def readable(self):
-        return self._file.readable()
-
-    def writable(self):
-        return self._file.writable()
-
-    def peek(self, n=0):
-        return self._file.peek(n)
-
-    def read(self, size=-1):
-        return self._file.read(size)
-
-    def read1(self, size=-1):
-        return self._file.read1(size)
-
-    def readinto(self, b):
-        return self._file.readinto(b)
-
-    def readline(self, size=-1):
-        return self._file.readline(size)
-
-    def readlines(self, size=-1):
-        return self._file.readlines(size)
-
-    def write(self, data):
-        return self._file.write(data)
-
-    def writelines(self, seq):
-        return self._file.writelines(seq)
-
-    def seek(self, offset, whence=io.SEEK_SET):
-        return self._file.seek(offset, whence)
-
-    def tell(self):
-        return self._file.tell()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.close()
-    
-class BZ2File(CompFile):
-    def __init__(self, path, mode='r', *args, **kwargs):
-        # normalize mode
-        mode = mode.lower()
-        if 't' not in mode:
-            mode += 't'
-
-        self._file = bz2.open(path, mode, *args, **kwargs)
-
-if _has_lzma:
-    class LZMAFile(CompFile):
-        def __init__(self, path, mode='r', *args, **kwargs):
-            mode = mode.lower()
-            if 't' not in mode:
-                mode += 't'
-            self._file = lzma.open(path, mode, *args, **kwargs)
-
-
-class GzipFile(CompFile):
-    def __init__(self, path, mode='r', *args, **kwargs):
-        mode = mode.lower()
-        if 't' not in mode:
-            mode += 't'
-        self._file = gzip.open(path, mode, *args, **kwargs)
-
-def open(*args, **kwargs):
-    """Shortcut to "compfile.CompFile()"
-    """
-    return CompFile(*args, **kwargs)
+    engine = auto_engine(fpath)
+    # normalize mode
+    mode = mode.lower()
+    if 't' not in mode:
+        mode += 't'
+    return engine(fpath, mode, *args, **kwargs)
