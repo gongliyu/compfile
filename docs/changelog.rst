@@ -3,6 +3,10 @@ ChangeLog
 
 .. currentmodule:: compfile
 
+0.0.2
+-----
+* Redesign: remove classes, keep :func:`compfile.open` as the public
+  API (:issue:`3`, :pr:`4`).
 
 0.0.1
 -----
