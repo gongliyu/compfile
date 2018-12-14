@@ -50,13 +50,6 @@ Using *compfile* is pretty simple. Just construct a
 *compfile.CompFile* object or call *compfile.open*
 
 ``` python
-with compfile.CompFile(fname, 'r') as f:
-    # do something with f
-```
-
-or 
-
-``` python
 with compfile.open(fname, 'r') as f:
     # do something with f
 ```
