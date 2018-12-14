@@ -12,10 +12,12 @@ _data_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
     ('abc.txt.gz', 'rt'),
     ('abc.txt.xz', 'rt'),
     ('abc.txt.lzma', 'rt'),
+    ('abc.txt', 'rt'),
     ('abc.txt.bz2', 'rb'),
     ('abc.txt.gz', 'rb'),
     ('abc.txt.xz', 'rb'),
     ('abc.txt.lzma', 'rb'),
+    ('abc.txt', 'rb'),
     ('abc.txt.lzma', 'r'),    
 ])
 def test_compfile_open(fname, mode):
@@ -29,9 +31,9 @@ def test_compfile_open(fname, mode):
         
     fname = os.path.join(_data_path, fname)
     with compfile.open(fname, mode) as f:
-        if 'b' in mode:
-            f = io.TextIOWrapper(f)
-        line = f.read().splitlines()
-        assert line[0] == 'abc'
-        assert line[1] == 'def'
+        lines = f.read().splitlines()
+        lines = [x.decode('utf-8') if isinstance(x, bytes) else x
+                 for x in lines]
+        assert lines[0] == 'abc'
+        assert lines[1] == 'def'
 

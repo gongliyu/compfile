@@ -12,6 +12,8 @@ import sys
 
 import decoutils
 
+_builtin_open = open
+
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
     import lzma
     _has_lzma = True
@@ -169,6 +171,8 @@ def open(fpath, mode, *args, **kwargs):
       rather than "rb".
     """
     engine = auto_engine(fpath)
+    if engine is None:
+        return _builtin_open(fpath, mode, *args, **kwargs)
     # normalize mode
     mode = mode.lower()
     if 't' not in mode and 'b' not in mode:
