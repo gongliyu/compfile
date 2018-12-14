@@ -147,7 +147,7 @@ def _register_auto_engine2(priority=50, prepend=False):
 @register_auto_engine(50, True)
 def auto_engine_bz2(path):
     if fnmatch.fnmatch(path, '*.bz2'):
-        return bz2.open
+        return _open_bz2
     return None
 
 def _open_bz2(fpath, mode='r', compresslevel=9,  encoding=None,
