@@ -10,6 +10,8 @@ import bisect
 import fnmatch
 import sys
 
+import decoutils
+
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 3:
     import lzma
     _has_lzma = True
@@ -29,7 +31,8 @@ else:
     _path_classes = (str, bytes)
 
 
-def register_auto_engine(*args, **kwargs):
+@decoutils.decorator_with_args(True)
+def register_auto_engine(func, priority=50, prepend=False):
     """Register automatic engine determing function
     
     Two possible signatures:
@@ -63,88 +66,15 @@ def register_auto_engine(*args, **kwargs):
       arguments). The second version will return a decorator wrap.
 
     """
-    if len(args) + len(kwargs) == 0:
-        return _register_auto_engine2()
-
-    if len(args) > 0:
-        if callable(args[0]):
-            return _register_auto_engine1(*args, **kwargs)
-        else:
-            return _register_auto_engine2(*args, **kwargs)
-
-    if 'func' in kwargs:
-        return _register_auto_engine1(*args, **kwargs)
-    else:
-        return _register_auto_engine2(*args, **kwargs)
-
-
-def _register_auto_engine1(func, priority=50, prepend=False):
-    """Register automatic engine determining function
-
-    Args:
-
-      func (callable): A callable which determines archive engine from
-        file properties and open mode. The signature should be:
-        func(path, mode) where path is a file-like or path-like
-        object, and mode str to open the file.
-
-      priority (int, float): Priority of the func, small number means
-        higher priority. When multiple functions are registered by
-        multiple call of register_auto_engine, functions will be used
-        in an ordering determined by thier priortities. Default to 50.
-
-      prepend (bool): If there is already a function with the same
-        priority registered, insert to the left (before) or right
-        (after) of it. Default to False.
-
-    Return:
-
-      Callable: The object `func` is returned so that this function
-        can be used as a non-argument decorator
-
-    Note:
-
-      This function could be used as a non-argument decorator.
-
-    """
     p = [x[0] for x in _auto_engine]
     if prepend:
         i = bisect.bisect_left(p, priority)
     else:
         i = bisect.bisect_right(p, priority)
     _auto_engine.insert(i, (priority, func))
-    return func
 
 
-def _register_auto_engine2(priority=50, prepend=False):
-    """Decorator with arguments for registering auto engine functions
-
-    Args:
-
-      priority (int, float): Priority of the func, small number means
-        higher priority. When multiple functions are registered by
-        multiple call of register_auto_engine, functions will be used
-        in an ordering determined by thier priortities. Default to 50.
-
-      prepend (bool): If there is already a function with the same
-        priority registered, insert to the left (before) or right
-        (after) of it. Default to False.
-
-    Returns:
-
-      A wrapper of :func:`register_auto_engine`
-
-    See also:
-
-      :func:`register_auto_engine`
-
-    """
-    def _decorator_wrapper(func):
-        register_auto_engine(func, priority=priority, prepend=prepend)
-        
-    return _decorator_wrapper
-
-@register_auto_engine(50, True)
+@register_auto_engine(prepend=True)
 def auto_engine_bz2(path):
     if fnmatch.fnmatch(path, '*.bz2'):
         return _open_bz2
@@ -162,13 +92,13 @@ def _open_bz2(fpath, mode='r', compresslevel=9,  encoding=None,
         
 
 if _has_lzma:
-    @register_auto_engine(50, False)
+    @register_auto_engine
     def auto_engine_lzma(path):
         if fnmatch.fnmatch(path, '*.lzma') or fnmatch.fnmatch(path, '*.xz'):
             return lzma.open
         return None
 
-@register_auto_engine(50, False)
+@register_auto_engine
 def auto_engine_gzip(path):
     if fnmatch.fnmatch(path, '*.gz'):
         return gzip.open
@@ -241,6 +171,6 @@ def open(fpath, mode, *args, **kwargs):
     engine = auto_engine(fpath)
     # normalize mode
     mode = mode.lower()
-    if 't' not in mode:
+    if 't' not in mode and 'b' not in mode:
         mode += 't'
     return engine(fpath, mode, *args, **kwargs)
