@@ -7,6 +7,8 @@ ChangeLog
 -----
 * Redesign: remove classes, keep :func:`compfile.open` as the public
   API (:issue:`3`, :pr:`4`).
+* Add support for uncompressed file (will open use builtin
+  :func:`open`), (:pr:`8`).
 
 0.0.1
 -----
