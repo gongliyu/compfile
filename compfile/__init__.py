@@ -150,6 +150,17 @@ def auto_engine_bz2(path):
         return bz2.open
     return None
 
+def _open_bz2(fpath, mode='r', compresslevel=9,  encoding=None,
+              errors=None, newline=None):
+    if 'b' not in mode:
+        mode2 = mode.replace('t', '') if 't' in mode else mode
+        f = bz2.BZ2File(fpath, mode2, compresslevel=compresslevel)
+        f =  io.TextIOWrapper(f, encoding, errors, newline)
+    else:
+        f = bz2.BZ2File(fpath, mode, compresslevel)
+    return f
+        
+
 if _has_lzma:
     @register_auto_engine(50, False)
     def auto_engine_lzma(path):
