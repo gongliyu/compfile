@@ -7,3 +7,4 @@ include README.md
 include setup.py
 include setup.cfg
 include MANIFEST.in
+include requirements.txt

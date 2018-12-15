@@ -3,6 +3,10 @@ ChangeLog
 
 .. currentmodule:: compfile
 
+0.0.2.1
+-------
+* Fix requirements.txt
+
 0.0.2
 -----
 * Redesign: remove classes, keep :func:`compfile.open` as the public
