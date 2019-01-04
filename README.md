@@ -44,6 +44,12 @@ pip install compfile
 conda install -c liyugong compfile
 ```
 
+### Install from GitHub
+
+``` shell
+pip install git+https://github.com/gongliyu/compfile.git@master
+```
+
 ## Simple example
 
 Using *compfile* is pretty simple. Just construct a

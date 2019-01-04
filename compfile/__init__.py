@@ -33,7 +33,7 @@ else:
     _path_classes = (str, bytes)
 
 
-@decoutils.decorator_with_args(True)
+@decoutils.decorator_with_args(return_original=True)
 def register_auto_engine(func, priority=50, prepend=False):
     """Register automatic engine determing function
     
